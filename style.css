@@ -1,0 +1,109 @@
+:root{
+  --bg:#0d2347; --bg2:#0b1d3a;
+  --card:#fff;  --line:#e6ecf5; --shadow:0 12px 40px rgba(3,18,46,.25);
+  --main-text:#0d2347; --muted:#667085;
+  --accent:#3b82f6; --accent-2:#2f6fe1; --danger:#d33b3b;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial;
+  color:var(--main-text);
+  background:
+    radial-gradient(1200px 600px at 25% -10%, #123a7a22, transparent 55%),
+    linear-gradient(160deg, var(--bg), var(--bg2));
+}
+
+/* Layout */
+.wrap{min-height:100%; display:grid; place-items:center; padding:24px}
+.card{
+  width:100%; max-width:520px; background:var(--card);
+  border:1px solid var(--line); border-radius:20px;
+  padding:28px 28px 24px; box-shadow:var(--shadow);
+  animation:raise .35s ease-out both;
+}
+@keyframes raise{from{transform:translateY(6px);opacity:0} to{transform:none;opacity:1}}
+
+/* Brand */
+.brand{text-align:center; margin-bottom:10px}
+.logo{width:280px; max-width:85%; height:auto; display:block; margin:0 auto 8px}
+h1{margin:6px 0 2px; font-size:28px; line-height:1.15; letter-spacing:.2px; color:var(--main-text)}
+.subtitle{margin:0 0 14px; color:var(--muted); font-size:14px}
+
+/* Form */
+label{display:block; font-size:13px; font-weight:400; margin:12px 0 6px; color:var(--main-text)}
+input[type="text"], input[type="password"]{
+  width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:12px;
+  background:#fff; outline:none; transition:border .2s, box-shadow .2s; font-size:15px; color:var(--main-text);
+}
+/* neutraliza amarillo de autofill */
+input:-webkit-autofill{
+  -webkit-box-shadow:0 0 0px 1000px #fff inset !important;
+  -webkit-text-fill-color:var(--main-text) !important;
+}
+input:focus{border-color:var(--accent); box-shadow:0 0 0 3px rgba(31,110,235,.12)}
+
+/* Consentimiento perfectamente alineado */
+.consent {
+  display: flex;
+  align-items: center; /* Alinea verticalmente el check con el texto */
+  gap: 8px; /* Espacio entre el check y el texto */
+  margin: 12px 0 16px;
+  font-size: 13px;
+}
+
+.consent input[type="checkbox"] {
+  margin: 0; /* Elimina márgenes extra que lo desalinean */
+  transform: scale(1.1); /* Opcional: agranda un poco el check */
+}
+
+.link-btn:hover{color:var(--accent-2)}
+
+/* Mensajes */
+.msg{min-height:18px; margin:0 0 6px; color:var(--danger); font-size:13px}
+
+/* Botón */
+#go{
+  width:100%; padding:12px 14px; background:var(--accent); color:#fff;
+  border:none; border-radius:12px; font-weight:700; cursor:pointer;
+  transition:transform .03s, background .2s, box-shadow .2s;
+  box-shadow:0 8px 20px rgba(31,110,235,.25);
+}
+#go:hover{background:var(--accent-2)}
+#go:active{transform:translateY(1px)}
+#go:disabled{opacity:.6; cursor:not-allowed; box-shadow:none}
+
+/* Separador y pie */
+.soft{border:0; height:1px; background:var(--line); margin:22px 0 12px}
+.foot{text-align:center}
+.slogan{margin:0 0 6px; font-style:italic; font-weight:600; color:var(--main-text)}
+.support{margin:0; font-style:normal; font-size:12px; color:var(--muted)}
+
+/* Dialog (modal) */
+dialog{max-width:560px; border:1px solid var(--line); border-radius:16px; padding:18px 18px 14px}
+dialog::backdrop{background:rgba(7,14,28,.45)}
+dialog h3{margin:0 0 8px; color:var(--main-text)}
+dialog p{margin:0 0 8px; color:var(--main-text); font-size:14px}
+.mini{margin:6px 0 12px 18px; color:var(--muted); font-size:13px}
+.dlg-actions{display:flex; gap:8px; justify-content:flex-end}
+.primary{background:var(--accent); color:#fff; border:none; padding:8px 12px; border-radius:10px; font-weight:700; cursor:pointer}
+.ghost{background:#fff; color:var(--main-text); border:1px solid var(--line); padding:8px 12px; border-radius:10px; cursor:pointer}
+
+/* Responsive */
+@media (max-width:380px){
+  .logo{width:230px}
+  h1{font-size:24px}
+}
+/* Botón con look de enlace para abrir el modal de la política */
+.link-btn{
+  background: none;
+  border: none;
+  color: var(--accent);
+  padding: 0;
+  font: inherit;              /* hereda tamaño y familia de fuente */
+  text-decoration: underline; /* se ve como enlace */
+  cursor: pointer;
+}
+.link-btn:hover{ color: var(--accent-2); }

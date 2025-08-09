@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>COMEIND - Acceso de Clientes</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Cargamos el JS una sola vez -->
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card" role="region" aria-labelledby="title">
+      <!-- Marca -->
+      <header class="brand">
+        <img src="logo vectorizado.svg" alt="Logo COMEIND" class="logo" />
+        <h1 id="title">Acceso de Clientes</h1>
+        <p class="subtitle">Portal de entrega de informes</p>
+      </header>
+
+      <!-- Formulario -->
+      <form id="loginForm" novalidate>
+        <label for="user">Usuario</label>
+        <input
+          id="user"
+          name="no-username"
+          type="text"
+          inputmode="text"
+          autocomplete="new-password"
+          autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false"
+          required
+        />
+
+        <label for="pin">Contraseña</label>
+        <input
+          id="pin"
+          name="no-password"
+          type="password"
+          autocomplete="new-password"
+          autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false"
+          required
+        />
+
+        <!-- Aceptación de política -->
+        <div class="consent">
+          <input id="acepto" type="checkbox" />
+          <label for="acepto" class="policy-text">
+            Acepto la
+            <a id="openPolicy" href="javascript:void(0)" class="link-btn">
+              política de uso y tratamiento de datos
+            </a>
+            para el acceso a la nube de reportes.
+          </label>
+        </div>
+
+        <p id="msg" class="msg" aria-live="polite"></p>
+        <button id="go" type="submit" disabled>Ingresar</button>
+      </form>
+
+      <hr class="soft" />
+
+      <footer class="foot">
+        <p class="slogan">“Cuando su necesidad es de confianza y precisión”</p>
+        <p class="support">Soporte técnico: Alejandro Imbaquingo | 0985524121</p>
+      </footer>
+    </section>
+  </main>
+
+  <!-- Modal Política (id debe ser 'policy' para que lo encuentre el JS) -->
+  <dialog id="policy">
+    <h3>Política de uso y tratamiento de datos</h3>
+    <p>
+      COMEIND ECUADOR S.A. tratará los datos de acceso únicamente para validar
+      identidad y registrar descargas, siguiendo los principios de finalidad,
+      minimización y seguridad (LOPDP, Ecuador). No se comparten datos con
+      terceros. Puede revocar su consentimiento en cualquier momento.
+    </p>
+    <ul class="mini">
+      <li>Finalidad: acceso seguro a reportes.</li>
+      <li>Base legal: consentimiento del usuario.</li>
+      <li>Conservación: 5 años según procedimiento integrado de gestión documental.</li>
+    </ul>
+    <div class="dlg-actions">
+      <button id="acceptPolicy" class="primary">Acepto</button>
+      <button id="closePolicy" class="ghost">Cerrar</button>
+    </div>
+  </dialog>
+</body>
+</html>
