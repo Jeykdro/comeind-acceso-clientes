@@ -4,9 +4,13 @@ const LOG_ENDPOINT = "https://login-clientes-func-atdce6a9fhe5dddf.brazilsouth-0
 const USERS = {
   // ANDESPETROLEUM - PETROORIENTAL
   "ANPTR": {
-    // SHA-256 de "Bru07Sc8,w@s"
-    hash: "10024adc0cc60c006d77d442a8ad5f6ce3cb1444e1294babc59b2c3f181670c8",
+      hash: "10024adc0cc60c006d77d442a8ad5f6ce3cb1444e1294babc59b2c3f181670c8",
     drive: "https://1drv.ms/f/c/ecc1feadee955b88/EkEDUwn0zNtMo2DyO8v8dpcBMGMRjMkMcDdPD4imxnQTXA?e=IPeiVr"
+
+    //CLDEROS Y AFINES
+    "CLDYAFN": {
+        hash: "$2y$19$D1.DtE9LdTGBXKzoDeYH.OAodTVUGes81n4cET/wuad.MZRhab9Ry",
+    drive: "https://1drv.ms/f/c/ecc1feadee955b88/Eq4Kt60AezJLkB53MBDntRsB-FK33p-Yzf2NcZp5XP7Stw?e=AvQS9b"
   }
 };
 
