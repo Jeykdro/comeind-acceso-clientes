@@ -1,57 +1,67 @@
 /* ========= CONFIG ========= */
-const LOG_ENDPOINT = "https://login-clientes-func-atdce6a9fhe5dddf.brazilsouth-01.azurewebsites.net/api/logAcces";
+const LOG_ENDPOINT =
+  "https://login-clientes-func-atdce6a9fhe5dddf.brazilsouth-01.azurewebsites.net/api/logAcces";
 
 const USERS = {
   // ANDESPETROLEUM - PETROORIENTAL
-  "ANPTR": {
+  ANPTR: {
     // SHA-256("Bru07Sc8,w@s")
-    hash: "10024adc0cc60c006d77d442a8ad5f6ce3cb1444e1294babc59b2c3f181670c8";
-    drive: "https://1drv.ms/f/c/ecc1feadee955b88/EkEDUwn0zNtMo2DyO8v8dpcBMGMRjMkMcDdPD4imxnQTXA?e=IPeiVr";
-  }
+    hash:
+      "10024adc0cc60c006d77d442a8ad5f6ce3cb1444e1294babc59b2c3f181670c8",
+    drive:
+      "https://1drv.ms/f/c/ecc1feadee955b88/EkEDUwn0zNtMo2DyO8v8dpcBMGMRjMkMcDdPD4imxnQTXA?e=IPeiVr"
+  },
 
   // CALDEROS Y AFINES
-  "CLDYAFN": {
-    // SHA-256("7728rts7gVPx")
-    hash: "31d59f866351a3e03c144a8d124a2434be7ccff75a83017906d5f053969d25f6";
-    drive: "https://1drv.ms/f/c/ecc1feadee955b88/Eq4Kt60AezJLkB53MBDntRsB-FK33p-Yzf2NcZp5XP7Stw?e=AvQS9b";
+  CLDYAFN: {
+    // SHA-256("e37kRhDGy9")
+    hash:
+      "bae599d7f78c8a6848c1646567748f439e0004f5a06c1d1abbd58260236dfa95",
+    drive:
+      "https://1drv.ms/f/c/ecc1feadee955b88/Eq4Kt60AezJLkB53MBDntRsB-FK33p-Yzf2NcZp5XP7Stw?e=AvQS9b"
   }
-}
-const CLIENTE    = "ANDESPETROLEUM-PETROORIENTAL";
+};
+
+const CLIENTE = "ANDESPETROLEUM-PETROORIENTAL";
 const ENTREGA_ID = "ANDES-2025-08-R1";
 
 /* ========= Helpers ========= */
-const $ = s => document.querySelector(s);
+const $ = (s) => document.querySelector(s);
 
-async function sha256Hex(str){
+async function sha256Hex(str) {
   const buf = new TextEncoder().encode(str);
   const digest = await crypto.subtle.digest("SHA-256", buf);
-  return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,"0")).join("");
+  return [...new Uint8Array(digest)]
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
-async function logAccess({usuario, accepted, result}){
-  try{
+async function logAccess({ usuario, accepted, result }) {
+  try {
     await fetch(LOG_ENDPOINT, {
       method: "POST",
-      headers: {"Content-Type":"application/json"},
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         PartitionKey: CLIENTE,
         RowKey: `${usuario}-${Date.now()}`,
         usuario,
-        accepted,                 // si aceptó la política
-        result,                   // "success" | "failed" | "policy-missing"
+        accepted, // si aceptó la política
+        result, // "success" | "failed" | "policy-missing"
         entrega: ENTREGA_ID,
         ts: new Date().toISOString(),
         ua: navigator.userAgent
       })
     });
-  }catch(e){ /* no bloquea la UX si falla el log */ }
+  } catch (e) {
+    /* no bloquea la UX si falla el log */
+  }
 }
 
 /* ========= UI: política (modal) y botón ========= */
 const dlg = $("#policy");
-$("#openPolicy").addEventListener("click", ()=> dlg.showModal());
-$("#closePolicy").addEventListener("click", ()=> dlg.close());
-$("#acceptPolicy").addEventListener("click", ()=>{
+$("#openPolicy").addEventListener("click", () => dlg.showModal());
+$("#closePolicy").addEventListener("click", () => dlg.close());
+$("#acceptPolicy").addEventListener("click", () => {
   const chk = $("#acepto");
   chk.checked = true;
   $("#go").disabled = false;
@@ -59,25 +69,25 @@ $("#acceptPolicy").addEventListener("click", ()=>{
 });
 
 // habilita/deshabilita “Ingresar” según el check
-$("#acepto").addEventListener("change", (e)=>{
+$("#acepto").addEventListener("change", (e) => {
   $("#go").disabled = !e.target.checked;
 });
 
 /* ========= Login ========= */
-$("#loginForm").addEventListener("submit", async (e)=>{
+$("#loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-  const msg   = $("#msg");
-  const user  = $("#user").value.trim();
-  const pass  = $("#pin").value;
+  const msg = $("#msg");
+  const user = $("#user").value.trim();
+  const pass = $("#pin").value;
 
   msg.textContent = "";
 
-  if(!$("#acepto").checked){
+  if (!$("#acepto").checked) {
     msg.textContent = "Debe aceptar la política para continuar.";
-    await logAccess({usuario:user, accepted:false, result:"policy-missing"});
+    await logAccess({ usuario: user, accepted: false, result: "policy-missing" });
     return;
   }
-  if(!user || !pass){
+  if (!user || !pass) {
     msg.textContent = "Ingrese usuario y contraseña.";
     return;
   }
@@ -85,17 +95,16 @@ $("#loginForm").addEventListener("submit", async (e)=>{
   const u = USERS[user];
   const hash = await sha256Hex(pass);
 
-  if(u && hash === u.hash){
-    await logAccess({usuario:user, accepted:true, result:"success"});
-    window.location.assign(u.drive);
-  }else{
+  if (u && hash === u.hash) {
+    await logAccess({ usuario: user, accepted: true, result: "success" });
+    window.location.assign(u.drive); // redirige a su OneDrive
+  } else {
     msg.textContent = "Usuario o contraseña incorrectos.";
-    await logAccess({usuario:user, accepted:true, result:"failed"});
+    await logAccess({ usuario: user, accepted: true, result: "failed" });
   }
 });
 
-/* ========= Detalles UX menores ========= */
-// Evita enviar con Enter si el botón está deshabilitado
-$("#pin").addEventListener("keydown", (e)=>{
-  if(e.key === "Enter" && $("#go").disabled){ e.preventDefault(); }
+/* ========= UX menor ========= */
+$("#pin").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && $("#go").disabled) e.preventDefault();
 });
