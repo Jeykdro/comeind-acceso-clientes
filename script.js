@@ -25,7 +25,7 @@ const USERS = {
 const CLIENTE = "ANDESPETROLEUM-PETROORIENTAL";
 const ENTREGA_ID = "ANDES-2025-08-R1";
 
-/* ========= Helpers ========= */
+/* ===== Helpers ===== */
 const $ = (s) => document.querySelector(s);
 
 async function sha256Hex(str) {
@@ -46,65 +46,108 @@ async function logAccess({ usuario, accepted, result }) {
         RowKey: `${usuario}-${Date.now()}`,
         usuario,
         accepted, // si aceptó la política
-        result, // "success" | "failed" | "policy-missing"
+        result,   // "success" | "failed" | "policy-missing"
         entrega: ENTREGA_ID,
         ts: new Date().toISOString(),
         ua: navigator.userAgent
       })
     });
   } catch (e) {
-    /* no bloquea la UX si falla el log */
+    // no bloquees la UX por errores de log
+    // console.warn("Log falló (ignorado):", e);
   }
 }
 
-/* ========= UI: política (modal) y botón ========= */
-const dlg = $("#policy");
-$("#openPolicy").addEventListener("click", () => dlg.showModal());
-$("#closePolicy").addEventListener("click", () => dlg.close());
-$("#acceptPolicy").addEventListener("click", () => {
-  const chk = $("#acepto");
-  chk.checked = true;
-  $("#go").disabled = false;
-  dlg.close();
-});
+/* ===== App ===== */
+window.addEventListener("DOMContentLoaded", () => {
+  try {
+    const form   = $("#loginForm");
+    const msg    = $("#msg");
+    const userEl = $("#user");
+    const passEl = $("#pin");
+    const goBtn  = $("#go");
+    const chk    = $("#acepto");
 
-// habilita/deshabilita “Ingresar” según el check
-$("#acepto").addEventListener("change", (e) => {
-  $("#go").disabled = !e.target.checked;
-});
+    // ——— Modal de Política ———
+    const dlg = $("#policy");
+    const openPolicy = $("#openPolicy");
+    const closePolicy = $("#closePolicy");
+    const acceptPolicy = $("#acceptPolicy");
 
-/* ========= Login ========= */
-$("#loginForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const msg = $("#msg");
-  const user = $("#user").value.trim();
-  const pass = $("#pin").value;
+    const canShowModal = dlg && typeof dlg.showModal === "function";
 
-  msg.textContent = "";
+    if (openPolicy && dlg) {
+      openPolicy.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (canShowModal) dlg.showModal();
+        else dlg.setAttribute("open", "open"); // fallback
+      });
+    }
+    if (closePolicy && dlg) {
+      closePolicy.addEventListener("click", () => {
+        if (canShowModal) dlg.close();
+        else dlg.removeAttribute("open");
+      });
+    }
+    if (acceptPolicy && dlg && chk && goBtn) {
+      acceptPolicy.addEventListener("click", () => {
+        chk.checked = true;
+        goBtn.disabled = false;
+        if (canShowModal) dlg.close();
+        else dlg.removeAttribute("open");
+      });
+    }
 
-  if (!$("#acepto").checked) {
-    msg.textContent = "Debe aceptar la política para continuar.";
-    await logAccess({ usuario: user, accepted: false, result: "policy-missing" });
-    return;
+    // ——— Habilitar botón por el check ———
+    if (chk && goBtn) {
+      // si ya estaba marcado (cache del navegador), respétalo
+      goBtn.disabled = !chk.checked;
+
+      chk.addEventListener("change", (e) => {
+        goBtn.disabled = !e.target.checked;
+      });
+    }
+
+    // ——— Submit del login ———
+    if (form) {
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        msg.textContent = "";
+
+        const usuario = (userEl?.value || "").trim();
+        const pass    = passEl?.value || "";
+
+        if (!chk?.checked) {
+          msg.textContent = "Debe aceptar la política para continuar.";
+          await logAccess({ usuario, accepted: false, result: "policy-missing" });
+          return;
+        }
+        if (!usuario || !pass) {
+          msg.textContent = "Ingrese usuario y contraseña.";
+          return;
+        }
+
+        const u = USERS[usuario];
+        const hash = await sha256Hex(pass);
+
+        if (u && hash === u.hash) {
+          await logAccess({ usuario, accepted: true, result: "success" });
+          window.location.assign(u.drive);
+        } else {
+          msg.textContent = "Usuario o contraseña incorrectos.";
+          await logAccess({ usuario, accepted: true, result: "failed" });
+        }
+      });
+    }
+
+    // ——— UX: Enter bloqueado si el botón está deshabilitado ———
+    if (passEl && goBtn) {
+      passEl.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && goBtn.disabled) e.preventDefault();
+      });
+    }
+  } catch (err) {
+    // Si algo raro pasa, no rompas toda la página
+    // console.error("Error inicializando la app:", err);
   }
-  if (!user || !pass) {
-    msg.textContent = "Ingrese usuario y contraseña.";
-    return;
-  }
-
-  const u = USERS[user];
-  const hash = await sha256Hex(pass);
-
-  if (u && hash === u.hash) {
-    await logAccess({ usuario: user, accepted: true, result: "success" });
-    window.location.assign(u.drive); // redirige a su OneDrive
-  } else {
-    msg.textContent = "Usuario o contraseña incorrectos.";
-    await logAccess({ usuario: user, accepted: true, result: "failed" });
-  }
-});
-
-/* ========= UX menor ========= */
-$("#pin").addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && $("#go").disabled) e.preventDefault();
 });
