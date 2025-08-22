@@ -18,7 +18,7 @@ const USERS = {
     hash:
       "bae599d7f78c8a6848c1646567748f439e0004f5a06c1d1abbd58260236dfa95",
     drive:
-      "https://1drv.ms/f/c/ecc1feadee955b88/Eq4Kt60AezJLkB53MBDntRsB-FK33p-Yzf2NcZp5XP7Stw?e=AvQS9b"
+      "https://1drv.ms/f/c/ecc1feadee955b88/Eq4Kt60AezJLkB53MBDntRsBE0A6E2vle7FasnDlLYbBMg?e=Hv6o2V"
   }
 };
 
